@@ -22,12 +22,19 @@ class RegistrationForm(FlaskForm):
 def register():
     form = RegistrationForm()
     if form.validate_on_submit():
-        hashed_password = generate_password_hash(form.password.data)
-        user = User(username=form.username.data, email=form.email.data, password=hashed_password)
+        user = User(username=form.username.data, email=form.email.data, password=generate_password_hash(form.password.data))
         db.session.add(user)
         db.session.commit()
         return redirect(url_for('login'))
     return render_template('register.html', form=form)
 
+@app.errorhandler(404)
+def page_not_found(e):
+    return render_template('404.html'), 404
+
+@app.errorhandler(500)
+def internal_server_error(e):
+    return render_template('500.html'), 500
+
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=False)
